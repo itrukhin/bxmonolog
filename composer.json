@@ -1,5 +1,5 @@
 {
-    "type": "project",
+    "type": "library",
     "name": "itrukhin/bxmonolog",
     "description": "Monolog logger for 1C-Bitrix",
     "keywords": ["bitrix", "bitrix-cms", "1c-bitrix","monolog", "logging"],
