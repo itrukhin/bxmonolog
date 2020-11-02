@@ -10,7 +10,7 @@ use Monolog\Registry;
 
 class Log {
 
-    private $channel = 'bitrix';
+    private $channel;
     private $minDebugLevel;
 
     /**
@@ -19,10 +19,12 @@ class Log {
      */
     public function __construct($channel = null) {
 
-        $this->minDebugLevel = $_ENV['APP_DEBUG_LEVEL'];
+        $this->minDebugLevel = ($_ENV['APP_DEBUG_LEVEL'] ?: 'DEBUG');
         if($channel) {
             $this->channel = $channel;
             //TODO: get channel options
+        } else {
+            $this->channel = ($_ENV['APP_LOG_BITRIX_CHANNEL'] ?: 'bitrix');
         }
     }
 
@@ -179,7 +181,7 @@ class Log {
             return Registry::getInstance($this->channel);
         }
 
-        $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ? $_ENV['APP_LOG_FOLDER'] : '/');
+        $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ?: '/log/');
         $logPath .= $this->channel . '/' . date('Y-m-d') . '.log';
         $logDir = pathinfo($logPath, PATHINFO_DIRNAME);
         if(!file_exists($logDir)) {
@@ -205,7 +207,7 @@ class Log {
 
         if($this->minDebugLevel && isset($levels[$this->minDebugLevel])) {
             return $levels[$this->minDebugLevel];
-        } else if($_ENV['APP_DEBUG']) {
+        } else {
             return Logger::DEBUG;
         }
     }
