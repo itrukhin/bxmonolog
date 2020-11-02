@@ -2,6 +2,7 @@
 namespace App\Monolog;
 
 use App\Log;
+use Bitrix\Main\Config\Option;
 use Monolog\Logger;
 
 class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
