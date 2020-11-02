@@ -180,7 +180,6 @@ class Log {
         if(Registry::hasLogger($this->channel)) {
             return Registry::getInstance($this->channel);
         }
-
         $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ?: '/log/');
         $logPath .= $this->channel . '/' . date('Y-m-d') . '.log';
         $logDir = pathinfo($logPath, PATHINFO_DIRNAME);
@@ -234,5 +233,12 @@ class Log {
     public function logInnerException(\Exception $exception)
     {
         Debug::writeToFile((string) $exception, "", "inner_error.log");
+    }
+
+    public static function cleanLogs($daysAgo = 15) {
+
+        $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ?: '/log/');
+        $command = sprintf("find %s -mindepth 1 -type f -mtime +%d | xargs rm", $logPath, $daysAgo);
+        exec($command);
     }
 }
