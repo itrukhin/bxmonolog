@@ -240,5 +240,6 @@ class Log {
         $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ?: '/log/');
         $command = sprintf("find %s -mindepth 1 -type f -mtime +%d | xargs rm", $logPath, $daysAgo);
         exec($command);
+        return sprintf('\App\Log::cleanLogs(%d);', $daysAgo);
     }
 }
