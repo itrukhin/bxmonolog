@@ -184,7 +184,11 @@ class Log {
         $logPath .= $this->channel . '/' . date('Y-m-d') . '.log';
         $logDir = pathinfo($logPath, PATHINFO_DIRNAME);
         if(!file_exists($logDir)) {
-            mkdir($logDir, BX_DIR_PERMISSIONS, true);
+            $mode = 0775;
+            if(defined('BX_DIR_PERMISSIONS') && BX_DIR_PERMISSIONS) {
+                $mode = BX_DIR_PERMISSIONS;
+            }
+            mkdir($logDir, $mode, true);
         }
 
         $handler = new StreamHandler($logPath);
