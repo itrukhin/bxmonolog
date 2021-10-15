@@ -38,7 +38,7 @@ class Log {
             $logger = $this->getLogger();
             if ($logger) {
                 $message = $this->formatMessage($message);
-                $logger->alert($message, $context);
+                $logger->alert($message, (array) $context);
             }
         } catch (\Exception $e) {
             self::logInnerException($e);
@@ -55,7 +55,7 @@ class Log {
             $logger = $this->getLogger();
             if ($logger) {
                 $message = $this->formatMessage($message);
-                $logger->critical($message, $context);
+                $logger->critical($message, (array) $context);
             }
         } catch (\Exception $e) {
             self::logInnerException($e);
@@ -73,7 +73,7 @@ class Log {
                 $logger = $this->getLogger();
                 if ($logger) {
                     $message = $this->formatMessage($message);
-                    $logger->error($message, $context);
+                    $logger->error($message, (array) $context);
                 }
             } catch (\Exception $e) {
                 self::logInnerException($e);
@@ -92,7 +92,7 @@ class Log {
                 $logger = $this->getLogger();
                 if ($logger) {
                     $message = $this->formatMessage($message);
-                    $logger->warning($message, $context);
+                    $logger->warning($message, (array) $context);
                 }
             } catch (\Exception $e) {
                 self::logInnerException($e);
@@ -111,7 +111,7 @@ class Log {
                 $logger = $this->getLogger();
                 if ($logger) {
                     $message = $this->formatMessage($message);
-                    $logger->notice($message, $context);
+                    $logger->notice($message, (array) $context);
                 }
             } catch (\Exception $e) {
                 self::logInnerException($e);
@@ -130,7 +130,7 @@ class Log {
                 $logger = $this->getLogger();
                 if ($logger) {
                     $message = $this->formatMessage($message);
-                    $logger->info($message, $context);
+                    $logger->info($message, (array) $context);
                 }
             } catch (\Exception $e) {
                 self::logInnerException($e);
@@ -149,7 +149,7 @@ class Log {
                 $logger = $this->getLogger();
                 if ($logger) {
                     $message = $this->formatMessage($message);
-                    $logger->debug($message, $context);
+                    $logger->debug($message, (array) $context);
                 }
             } catch (\Exception $e) {
                 self::logInnerException($e);
