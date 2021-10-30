@@ -7,8 +7,9 @@ use Bitrix\Main\Error;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Registry;
+use Psr\Log\LoggerInterface;
 
-class Log {
+class Log implements LoggerInterface {
 
     private $channel;
     private $minDebugLevel;
@@ -150,6 +151,34 @@ class Log {
                 if ($logger) {
                     $message = $this->formatMessage($message);
                     $logger->debug($message, (array) $context);
+                }
+            } catch (\Exception $e) {
+                self::logInnerException($e);
+            }
+        }
+    }
+
+    public function emergency($message, array $context = array())
+    {
+        try {
+            $logger = $this->getLogger();
+            if ($logger) {
+                $message = $this->formatMessage($message);
+                $logger->emergency($message, (array) $context);
+            }
+        } catch (\Exception $e) {
+            self::logInnerException($e);
+        }
+    }
+
+    public function log($level, $message, array $context = array())
+    {
+        if (self::isDebugEnabled($level)) {
+            try {
+                $logger = $this->getLogger();
+                if ($logger) {
+                    $message = $this->formatMessage($message);
+                    $logger->log($level, $message, (array) $context);
                 }
             } catch (\Exception $e) {
                 self::logInnerException($e);
