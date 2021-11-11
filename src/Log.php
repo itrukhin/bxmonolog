@@ -15,12 +15,12 @@ class Log implements LoggerInterface {
     private $minDebugLevel;
 
     /**
-     * @param false $channel
+     * @param string $channel
      */
-    public function __construct($channel = false) {
+    public function __construct($channel = '') {
 
         $this->minDebugLevel = ($_ENV['APP_DEBUG_LEVEL'] ?: 'DEBUG');
-        if($channel) {
+        if(!empty($channel)) {
             $this->channel = $channel;
             //TODO: get channel options
         } else {
