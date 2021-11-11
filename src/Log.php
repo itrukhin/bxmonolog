@@ -15,10 +15,9 @@ class Log implements LoggerInterface {
     private $minDebugLevel;
 
     /**
-     * Log constructor.
-     * @param null $channel
+     * @param false $channel
      */
-    public function __construct($channel = null) {
+    public function __construct($channel = false) {
 
         $this->minDebugLevel = ($_ENV['APP_DEBUG_LEVEL'] ?: 'DEBUG');
         if($channel) {
@@ -37,10 +36,8 @@ class Log implements LoggerInterface {
     {
         try {
             $logger = $this->getLogger();
-            if ($logger) {
-                $message = $this->formatMessage($message);
-                $logger->alert($message, (array) $context);
-            }
+            $message = $this->formatMessage($message);
+            $logger->alert($message, (array) $context);
         } catch (\Exception $e) {
             self::logInnerException($e);
         }
@@ -54,10 +51,8 @@ class Log implements LoggerInterface {
     {
         try {
             $logger = $this->getLogger();
-            if ($logger) {
-                $message = $this->formatMessage($message);
-                $logger->critical($message, (array) $context);
-            }
+            $message = $this->formatMessage($message);
+            $logger->critical($message, (array) $context);
         } catch (\Exception $e) {
             self::logInnerException($e);
         }
@@ -69,13 +64,11 @@ class Log implements LoggerInterface {
      */
     public function error($message, $context = [])
     {
-        if (self::isDebugEnabled(Logger::ERROR)) {
+        if ($this->isDebugEnabled(Logger::ERROR)) {
             try {
                 $logger = $this->getLogger();
-                if ($logger) {
-                    $message = $this->formatMessage($message);
-                    $logger->error($message, (array) $context);
-                }
+                $message = $this->formatMessage($message);
+                $logger->error($message, (array) $context);
             } catch (\Exception $e) {
                 self::logInnerException($e);
             }
@@ -88,13 +81,11 @@ class Log implements LoggerInterface {
      */
     public function warning($message, $context = [])
     {
-        if (self::isDebugEnabled(Logger::WARNING)) {
+        if ($this->isDebugEnabled(Logger::WARNING)) {
             try {
                 $logger = $this->getLogger();
-                if ($logger) {
-                    $message = $this->formatMessage($message);
-                    $logger->warning($message, (array) $context);
-                }
+                $message = $this->formatMessage($message);
+                $logger->warning($message, (array) $context);
             } catch (\Exception $e) {
                 self::logInnerException($e);
             }
@@ -107,13 +98,11 @@ class Log implements LoggerInterface {
      */
     public function notice($message, $context = [])
     {
-        if (self::isDebugEnabled(Logger::NOTICE)) {
+        if ($this->isDebugEnabled(Logger::NOTICE)) {
             try {
                 $logger = $this->getLogger();
-                if ($logger) {
-                    $message = $this->formatMessage($message);
-                    $logger->notice($message, (array) $context);
-                }
+                $message = $this->formatMessage($message);
+                $logger->notice($message, (array) $context);
             } catch (\Exception $e) {
                 self::logInnerException($e);
             }
@@ -126,13 +115,11 @@ class Log implements LoggerInterface {
      */
     public function info($message, $context = [])
     {
-        if (self::isDebugEnabled(Logger::INFO)) {
+        if ($this->isDebugEnabled(Logger::INFO)) {
             try {
                 $logger = $this->getLogger();
-                if ($logger) {
-                    $message = $this->formatMessage($message);
-                    $logger->info($message, (array) $context);
-                }
+                $message = $this->formatMessage($message);
+                $logger->info($message, (array) $context);
             } catch (\Exception $e) {
                 self::logInnerException($e);
             }
@@ -145,41 +132,35 @@ class Log implements LoggerInterface {
      */
     public function debug($message, $context = [])
     {
-        if (self::isDebugEnabled(Logger::DEBUG)) {
+        if ($this->isDebugEnabled(Logger::DEBUG)) {
             try {
                 $logger = $this->getLogger();
-                if ($logger) {
-                    $message = $this->formatMessage($message);
-                    $logger->debug($message, (array) $context);
-                }
+                $message = $this->formatMessage($message);
+                $logger->debug($message, (array) $context);
             } catch (\Exception $e) {
                 self::logInnerException($e);
             }
         }
     }
 
-    public function emergency($message, array $context = array())
+    public function emergency($message, $context = [])
     {
         try {
             $logger = $this->getLogger();
-            if ($logger) {
-                $message = $this->formatMessage($message);
-                $logger->emergency($message, (array) $context);
-            }
+            $message = $this->formatMessage($message);
+            $logger->emergency($message, (array) $context);
         } catch (\Exception $e) {
             self::logInnerException($e);
         }
     }
 
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, $context = [])
     {
-        if (self::isDebugEnabled($level)) {
+        if ($this->isDebugEnabled($level)) {
             try {
                 $logger = $this->getLogger();
-                if ($logger) {
-                    $message = $this->formatMessage($message);
-                    $logger->log($level, $message, (array) $context);
-                }
+                $message = $this->formatMessage($message);
+                $logger->log($level, $message, (array) $context);
             } catch (\Exception $e) {
                 self::logInnerException($e);
             }
@@ -188,7 +169,7 @@ class Log implements LoggerInterface {
 
     /**
      * @param $message
-     * @return false|string
+     * @return string
      */
     private function formatMessage($message) {
 
@@ -198,7 +179,7 @@ class Log implements LoggerInterface {
             $message = json_encode((array) $message, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
             $message = str_replace('\\u0000', '', $message);
         }
-        return $message;
+        return (string) $message;
     }
 
     /**
@@ -224,7 +205,7 @@ class Log implements LoggerInterface {
         $handler->setFormatter(new ArrayFormatter());
 
         $logger = new Logger($this->channel);
-        if($handler) $logger->pushHandler($handler);
+        $logger->pushHandler($handler);
         Registry::addLogger($logger, $this->channel, true);
 
         return $logger;
@@ -253,7 +234,7 @@ class Log implements LoggerInterface {
         if (defined('FORCE_DEBUG') && FORCE_DEBUG) {
             return true;
         }
-        $min_level = self::getMinErrorLevel();
+        $min_level = $this->getMinErrorLevel();
         if($level >= $min_level) {
             return true;
         }
@@ -263,7 +244,7 @@ class Log implements LoggerInterface {
     /**
      * @param \Exception $exception
      */
-    public function logInnerException(\Exception $exception)
+    public static function logInnerException(\Exception $exception)
     {
         Debug::writeToFile((string) $exception, "", "inner_error.log");
     }

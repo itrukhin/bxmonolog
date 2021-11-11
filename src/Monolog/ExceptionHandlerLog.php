@@ -38,12 +38,12 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
                 try {
                     $context = call_user_func($this->context, $exception);
                 } catch(\Exception $e) {
-                    $log->logInnerException(new \Exception('Can not call ' . $this->context));
+                    Log::logInnerException(new \Exception('Can not call ' . $this->context));
                 }
             }
             $log->critical($exception, (array) $this->context);
         } catch(\Exception $e) {
-            $log->logInnerException($e);
+            Log::logInnerException($e);
         }
     }
 }
