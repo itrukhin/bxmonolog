@@ -1,5 +1,9 @@
 # Адаптер [Monolog](https://github.com/Seldaek/monolog) для 1С-Битрикс
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/itrukhin/bxmonolog/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/itrukhin/bxmonolog/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/itrukhin/bxmonolog/badges/build.png?b=master)](https://scrutinizer-ci.com/g/itrukhin/bxmonolog/build-status/master)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/itrukhin/bxmonolog/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
+
 Адаптер позволяет организовать запись и хранение файлов логов в Битриксе. Основные возможности:
 * Хранение всех логов в выделенной специальной папке на сервере
 * Автоматическое создание вложенных папок для группировки файлов логов
