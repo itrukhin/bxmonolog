@@ -51,7 +51,7 @@ class LoggerFactory {
                 unset($context['disable_preview']);
             }
 
-            $sender->setFormatter(new LineFormatter("[%datetime%] %level_name%: %message%"));
+            $sender->setFormatter(new LineFormatter("[%datetime%] %level_name%: %message%", "d.m.Y H:i:s"));
 
             $telegramLogger = new Logger('Telegram');
             $telegramLogger->pushHandler($sender);
