@@ -3,6 +3,7 @@ namespace App\Monolog;
 
 use App\Log;
 use Bitrix\Main\Config\Option;
+use Bitrix\Main\Diag\Debug;
 use Monolog\Logger;
 
 class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
@@ -38,12 +39,20 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
                 try {
                     $context = call_user_func($this->context, $exception);
                 } catch(\Exception $e) {
-                    Log::logInnerException(new \Exception('Can not call ' . $this->context));
+                    self::logInnerException(new \Exception('Can not call ' . $this->context));
                 }
             }
             $log->critical($exception, (array) $this->context);
         } catch(\Exception $e) {
-            Log::logInnerException($e);
+            self::logInnerException($e);
         }
+    }
+
+    /**
+     * @param \Exception $exception
+     */
+    protected static function logInnerException(\Exception $exception)
+    {
+        Debug::writeToFile((string) $exception, "", "inner_error.log");
     }
 }
