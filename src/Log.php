@@ -4,7 +4,11 @@ namespace App;
 use App\Monolog\ArrayFormatter;
 use Bitrix\Main\Diag\Debug;
 use Bitrix\Main\Error;
+use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\TelegramBotHandler;
 use Monolog\Logger;
 use Monolog\Registry;
 use Psr\Log\LoggerInterface;
@@ -156,6 +160,7 @@ class Log implements LoggerInterface {
 
     public function log($level, $message, $context = [])
     {
+        $level = Logger::toMonologLevel($level);
         if ($this->isDebugEnabled($level)) {
             try {
                 $logger = $this->getLogger();
@@ -165,6 +170,54 @@ class Log implements LoggerInterface {
                 self::logInnerException($e);
             }
         }
+    }
+
+    public function telegram($level, $message, $context = []) {
+
+        $level = Logger::toMonologLevel($level);
+        if (!$this->isDebugEnabled($level)) {
+            return;
+        }
+
+        $isEnabled = false;
+        if(isset($_ENV['APP_LOG_TELEGRAM'])) {
+            $APP_LOG_TELEGRAM = trim(strtolower($_ENV['APP_LOG_TELEGRAM']));
+            if($APP_LOG_TELEGRAM === 'on' || $APP_LOG_TELEGRAM === 'true' || $APP_LOG_TELEGRAM === '1') {
+                $isEnabled = true;
+            }
+        }
+
+        if(!isset($_ENV['APP_LOG_TELEGRAM_KEY']) || empty($_ENV['APP_LOG_TELEGRAM_KEY'])) {
+            $isEnabled = false;
+        }
+        if(!isset($_ENV['APP_LOG_TELEGRAM_CHANNEL']) || empty($_ENV['APP_LOG_TELEGRAM_CHANNEL'])) {
+            $isEnabled = false;
+        }
+
+        if(!$isEnabled) {
+            return;
+        }
+
+        $sender = new TelegramBotHandler($_ENV['APP_LOG_TELEGRAM_KEY'], $_ENV['APP_LOG_TELEGRAM_CHANNEL']);
+
+        if(isset($context['parse_mode']) && !empty($context['parse_mode'])) {
+            $sender->setParseMode($context['parse_mode']);
+            unset($context['parse_mode']);
+        }
+        if(isset($context['disable_notification']) && $context['disable_notification'] === true) {
+            $sender->disableNotification(true);
+            unset($context['disable_notification']);
+        }
+        if(isset($context['disable_preview']) && $context['disable_preview'] === true) {
+            $sender->disableWebPagePreview(true);
+            unset($context['disable_preview']);
+        }
+
+        $sender->setFormatter(new LineFormatter("[%datetime%] %level_name%: %message%"));
+
+        $telegramLogger = new Logger('Telegram');
+        $telegramLogger->pushHandler($sender);
+        $telegramLogger->log($level, $message, $context);
     }
 
     /**
@@ -234,6 +287,7 @@ class Log implements LoggerInterface {
         if (defined('FORCE_DEBUG') && FORCE_DEBUG) {
             return true;
         }
+
         $min_level = $this->getMinErrorLevel();
         if($level >= $min_level) {
             return true;
