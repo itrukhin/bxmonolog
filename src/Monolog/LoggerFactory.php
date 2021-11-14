@@ -13,8 +13,9 @@ class LoggerFactory {
 
     public static function getInstance($channel, $context) {
 
-        if(Registry::hasLogger($channel)) {
-            return Registry::getInstance($channel);
+        $key = md5(json_encode([$channel, $context]));
+        if(Registry::hasLogger($key)) {
+            return Registry::getInstance($key);
         }
 
         if($channel == self::TELEGRAM_CHANNEL) {
@@ -31,11 +32,11 @@ class LoggerFactory {
             if(!isset($_ENV['APP_LOG_TELEGRAM_KEY']) || empty($_ENV['APP_LOG_TELEGRAM_KEY'])) {
                 return null;
             }
-            if(!isset($_ENV['APP_LOG_TELEGRAM_CHANNEL']) || empty($_ENV['APP_LOG_TELEGRAM_CHANNEL'])) {
+            if(!isset($_ENV['APP_LOG_TELEGRAM_CHATID']) || empty($_ENV['APP_LOG_TELEGRAM_CHATID'])) {
                 return null;
             }
 
-            $sender = new TelegramBotHandler($_ENV['APP_LOG_TELEGRAM_KEY'], $_ENV['APP_LOG_TELEGRAM_CHANNEL']);
+            $sender = new TelegramBotHandler($_ENV['APP_LOG_TELEGRAM_KEY'], $_ENV['APP_LOG_TELEGRAM_CHATID']);
 
             if(isset($context['parse_mode']) && !empty($context['parse_mode'])) {
                 $sender->setParseMode($context['parse_mode']);
@@ -58,7 +59,7 @@ class LoggerFactory {
 
             $telegramLogger = new Logger(self::TELEGRAM_CHANNEL);
             $telegramLogger->pushHandler($sender);
-            Registry::addLogger($telegramLogger, $channel, true);
+            Registry::addLogger($telegramLogger, $key, true);
 
             return $telegramLogger;
 
@@ -80,7 +81,7 @@ class LoggerFactory {
 
             $logger = new Logger($channel);
             $logger->pushHandler($handler);
-            Registry::addLogger($logger, $channel, true);
+            Registry::addLogger($logger, $key, true);
 
             return $logger;
         }

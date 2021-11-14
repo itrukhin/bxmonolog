@@ -41,25 +41,25 @@ composer require itrukhin/bxmonolog:dev-master
 ```
 
 ## Настройки окружения
-* **APP_DEBUG** - включить/выключить отладку, испольщуется только в .settings.php
-* **APP_DEBUG_LEVEL** - минимальный уровень, для которого будет выполняться запись в лог. По умолчанию DEBUG, это значит, что будут выводится все ошибки. Можно на проде, например, ограничить уровнем ERROR
-* **APP_LOG_FOLDER** - папка логов, относительно DOCUMENT_ROOT. По умолчанию /log/
-* **APP_LOG_BITRIX_CHANNEL** - подпапка логов по умолчанию. Если не задано, будет создана папка bitrix, относительно APP_LOG_FOLDER. Для записи своих логов рекомендуется явно указывать папку, так как в папку bitrix будут записываться ошибки ядра.
+* **APP_DEBUG** - включить/выключить отладку, используется только в `.settings.php`
+* **APP_DEBUG_LEVEL** - минимальный уровень, для которого будет выполняться запись в лог. По умолчанию `DEBUG`, это значит, что будут выводиться все ошибки. Можно на проде, например, ограничить уровнем `ERROR`
+* **APP_LOG_FOLDER** - папка логов, относительно `DOCUMENT_ROOT`. По умолчанию `/log/`
+* **APP_LOG_BITRIX_CHANNEL** - подпапка логов по умолчанию. Если не задано, будет создана папка `bitrix`, относительно `APP_LOG_FOLDER`. Для записи своих логов рекомендуется явно указывать папку, так как в папку `bitrix` будут записываться ошибки ядра.
 
 # Примеры использования
 Код примеров есть в папке [examples](examples/)
 
-При настроенном .settings.php (см. выше) все ошибки битрикса будут записываться в файл
+При настроенном `.settings.php` (см. выше) все ошибки битрикса будут записываться в файл
 ```bash
 DOCUMENT_ROOT/APP_LOG_FOLDER/APP_LOG_BITRIX_CHANNEL/YYYY-MM-DD.log
 ```
-что, по умолчанию, соответствует пути /log/bitrix/ от корня сервера. Ошибки ядра имеют уровень CRITICAL
+что, по умолчанию, соответствует пути `/log/bitrix/` от корня сервера. Ошибки ядра имеют уровень `CRITICAL`
 
 Для записи произвольных логов необходимо вначале создать экземпляр объекта лога
 ```php
 $log = new \App\Log('test');
 ```
-где test - имя папки, относительно APP_LOG_FOLDER, в которую будут писаться логи. Подапка при ее отсутствии будет создана автоматически. По возможности, будут установлены аттрибуты BX_DIR_PERMISSIONS
+где test - имя папки, относительно `APP_LOG_FOLDER`, в которую будут писаться логи. Подапка, при ее отсутствии, будет создана автоматически. По возможности, будут установлены аттрибуты `BX_DIR_PERMISSIONS`
 
 Далее для каждого уровня лога может быть вызван одноименный метод, например:
 
@@ -93,6 +93,47 @@ Stack trace:
 #5 {main}
 ------------------------------------------------------------------------
 ```
+# Отправка ошибок в Telegram
+Для оперативной реакции на ошибки, необходимо узнавать о них сразу, как только они возникли. Одним из удобных способов 
+является отправка ошибок в чат Telegram. О возникновении ошибки на сайте немедленно будут проинформированы все участники чата.
+##Настройка Telegram
+Необходимо создать бота в телеграм с помощью [@BotFather](https://core.telegram.org/bots#3-how-do-i-create-a-bot). Для бота мы получим 
+API Token вида `000000000:XXXXXXXXXXXXXXXXXXXX`. Далее нужно создать чат, в который бот будет писать сообщения, и добавить бота администратором в этот чат.
+Второй параметр, который нам необходимо получить - это ChatID. Получить его можно выполнив запрос вида `https://api.telegram.org/botXXX:YYYYY/getUpdates`,
+где `XXX:YYYYY` - это API Token бота. В ответ будет json, из которого нужно получить ChatID.
+```json
+[20-04-21 00:46:11:130 PDT] {"ok":true,"result":[{"update_id":81329501,
+"message":{"message_id":975,"from":{"id":962548471,"is_bot":false,"first_name":"Trajano","last_name":"Roberto","username":"TrajanoRoberto","language_code":"en"},"chat":{"id":-1001202656383,"title":"R\u00e1dioRN - A voz da na\u00e7\u00e3o!","type":"supergroup"},"date":1587454914,"left_chat_participant":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"},"left_chat_member":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"}}},{"update_id":81329502,
+"message":{"message_id":976,"from":{"id":962548471,"is_bot":false,"first_name":"Trajano","last_name":"Roberto","username":"TrajanoRoberto","language_code":"en"},"chat":{"id":-1001202656383,"title":"R\u00e1dioRN - A voz da na\u00e7\u00e3o!","type":"supergroup"},"date":1587454932,"new_chat_participant":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"},"new_chat_member":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"},"new_chat_members":[{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"}]}}]}
+```
+нас интересует **"chat":{"id":-1001202656383,"title"...** ChatID это `-1001202656383`
+##Настройка BxMonolog
+За настройку параметров отправки сообщений в Telegram отвечают следующие параметры $_ENV
+* **APP_LOG_TELEGRAM** - включить/выключить отправку в Telegram. Должно быть установлено в **1**, или **true**, или **on**
+* **APP_LOG_TELEGRAM_KEY** - API Token бота
+* **APP_LOG_TELEGRAM_CHATID** - ChatID
+##Отправка в Telegram
+Для отправки сообщение в телеграм, реализован метод telegram, аналогичный методу log в PSR-3
+```php
+$log = new \App\Log('test');
+try {
+    // my code
+} catch(Exception $e) {
+    $log->telegram(\Psr\Log\LogLevel::ERROR, $e, ['source' => 'my code error'])
+}
+```
+Результатом будет запись ошибки в лог и сообщение в Telegram, начинающееся с _my code error_ и содержащее текст ошибки, имя файла. Также можно писать любой текст.
+По умолчанию включен формат отправки HTML, включены уведомления, отключена ссылка на просмотр сообщения в вебе.
+###Настройки, передаваемые через массив context
+* parse_mode - по умолчанию HTML, но может быть null, Markdown, MarkdownV2
+* disable_notification - boolean, по умолчанию false
+* disable_preview - boolean, по умолчанию true
+
+Также можно получить экземпляр логгера, с настройками по умолчанию, только для отправки сообщений в Telegram
+```php
+$log = new \App\Log('telegram-messenger');
+```
+
 # Очистка логов
 Для периодической очистки логов можно использовать метод 
 ```php
