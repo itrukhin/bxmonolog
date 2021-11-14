@@ -19,7 +19,6 @@ class LoggerFactory {
 
         if($channel == self::TELEGRAM_CHANNEL) {
 
-            $isEnabled = false;
             if(isset($_ENV['APP_LOG_TELEGRAM'])) {
                 $APP_LOG_TELEGRAM = trim(strtolower($_ENV['APP_LOG_TELEGRAM']));
                 if($APP_LOG_TELEGRAM !== 'on' && $APP_LOG_TELEGRAM !== 'true' && $APP_LOG_TELEGRAM !== '1') {
