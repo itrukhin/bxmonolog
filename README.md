@@ -102,8 +102,10 @@ Stack trace:
 API Token вида `000000000:XXXXXXXXXXXXXXXXXXXX`. Далее нужно создать чат, в который бот будет писать сообщения, и добавить бота администратором в этот чат.
 Второй параметр, который нам необходимо получить - это ChatID. Получить его можно выполнив запрос вида `https://api.telegram.org/botXXX:YYYYY/getUpdates`,
 где `XXX:YYYYY` - это API Token бота. В ответ будет json, из которого нужно получить ChatID.
+
+**Пример ответа**
 ```json
-[20-04-21 00:46:11:130 PDT] {"ok":true,"result":[{"update_id":81329501,
+{"ok":true,"result":[{"update_id":81329501,
 "message":{"message_id":975,"from":{"id":962548471,"is_bot":false,"first_name":"Trajano","last_name":"Roberto","username":"TrajanoRoberto","language_code":"en"},"chat":{"id":-1001202656383,"title":"R\u00e1dioRN - A voz da na\u00e7\u00e3o!","type":"supergroup"},"date":1587454914,"left_chat_participant":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"},"left_chat_member":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"}}},{"update_id":81329502,
 "message":{"message_id":976,"from":{"id":962548471,"is_bot":false,"first_name":"Trajano","last_name":"Roberto","username":"TrajanoRoberto","language_code":"en"},"chat":{"id":-1001202656383,"title":"R\u00e1dioRN - A voz da na\u00e7\u00e3o!","type":"supergroup"},"date":1587454932,"new_chat_participant":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"},"new_chat_member":{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"},"new_chat_members":[{"id":1215098445,"is_bot":true,"first_name":"MediaFlamengoRawBot","username":"MediaFlamengoRawBot"}]}}]}
 ```
