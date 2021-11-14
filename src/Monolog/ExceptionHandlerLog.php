@@ -2,9 +2,9 @@
 namespace App\Monolog;
 
 use App\Log;
-use Bitrix\Main\Config\Option;
 use Bitrix\Main\Diag\Debug;
 use Monolog\Logger;
+use Psr\Log\LogLevel;
 
 class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
 
@@ -42,7 +42,12 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
                     self::logInnerException(new \Exception('Can not call ' . $this->context));
                 }
             }
-            $log->critical($exception, (array) $this->context);
+            if(!is_array($this->context)) {
+                $this->context = (!empty($this->context) ? [$this->context] : []);
+            }
+            $this->context['source'] = self::logTypeToString($logType);
+            $log->telegram(LogLevel::CRITICAL, $exception, $this->context);
+
         } catch(\Exception $e) {
             self::logInnerException($e);
         }

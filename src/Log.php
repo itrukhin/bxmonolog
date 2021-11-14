@@ -1,9 +1,9 @@
 <?php
 namespace App;
 
+use App\Monolog\FormatHelper;
 use App\Monolog\LoggerFactory;
 use Bitrix\Main\Diag\Debug;
-use Bitrix\Main\Error;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -32,7 +32,7 @@ class Log implements LoggerInterface {
     {
         try {
             $logger = LoggerFactory::getInstance($this->channel, $context);
-            $message = $this->formatMessage($message);
+            $message = FormatHelper::stringfyMessage($message);
             $logger->alert($message, (array) $context);
         } catch (\Exception $e) {
             $this->logInnerException($e);
@@ -47,7 +47,7 @@ class Log implements LoggerInterface {
     {
         try {
             $logger = LoggerFactory::getInstance($this->channel, $context);
-            $message = $this->formatMessage($message);
+            $message = FormatHelper::stringfyMessage($message);
             $logger->critical($message, (array) $context);
         } catch (\Exception $e) {
             $this->logInnerException($e);
@@ -63,7 +63,7 @@ class Log implements LoggerInterface {
         if ($this->isDebugEnabled(Logger::ERROR)) {
             try {
                 $logger = LoggerFactory::getInstance($this->channel, $context);
-                $message = $this->formatMessage($message);
+                $message = FormatHelper::stringfyMessage($message);
                 $logger->error($message, (array) $context);
             } catch (\Exception $e) {
                 $this->logInnerException($e);
@@ -80,7 +80,7 @@ class Log implements LoggerInterface {
         if ($this->isDebugEnabled(Logger::WARNING)) {
             try {
                 $logger = LoggerFactory::getInstance($this->channel, $context);
-                $message = $this->formatMessage($message);
+                $message = FormatHelper::stringfyMessage($message);
                 $logger->warning($message, (array) $context);
             } catch (\Exception $e) {
                 $this->logInnerException($e);
@@ -97,7 +97,7 @@ class Log implements LoggerInterface {
         if ($this->isDebugEnabled(Logger::NOTICE)) {
             try {
                 $logger = LoggerFactory::getInstance($this->channel, $context);
-                $message = $this->formatMessage($message);
+                $message = FormatHelper::stringfyMessage($message);
                 $logger->notice($message, (array) $context);
             } catch (\Exception $e) {
                 $this->logInnerException($e);
@@ -114,7 +114,7 @@ class Log implements LoggerInterface {
         if ($this->isDebugEnabled(Logger::INFO)) {
             try {
                 $logger = LoggerFactory::getInstance($this->channel, $context);
-                $message = $this->formatMessage($message);
+                $message = FormatHelper::stringfyMessage($message);
                 $logger->info($message, (array) $context);
             } catch (\Exception $e) {
                 $this->logInnerException($e);
@@ -131,7 +131,7 @@ class Log implements LoggerInterface {
         if ($this->isDebugEnabled(Logger::DEBUG)) {
             try {
                 $logger = LoggerFactory::getInstance($this->channel, $context);
-                $message = $this->formatMessage($message);
+                $message = FormatHelper::stringfyMessage($message);
                 $logger->debug($message, (array) $context);
             } catch (\Exception $e) {
                 $this->logInnerException($e);
@@ -147,7 +147,7 @@ class Log implements LoggerInterface {
     {
         try {
             $logger = LoggerFactory::getInstance($this->channel, $context);
-            $message = $this->formatMessage($message);
+            $message = FormatHelper::stringfyMessage($message);
             $logger->emergency($message, (array) $context);
         } catch (\Exception $e) {
             $this->logInnerException($e);
@@ -164,7 +164,7 @@ class Log implements LoggerInterface {
         if ($this->isDebugEnabled($level)) {
             try {
                 $logger = LoggerFactory::getInstance($this->channel, $context);
-                $message = $this->formatMessage($message);
+                $message = FormatHelper::stringfyMessage($message);
                 $logger->log($level, $message, (array) $context);
             } catch (\Exception $e) {
                 $this->logInnerException($e);
@@ -179,31 +179,17 @@ class Log implements LoggerInterface {
      */
     public function telegram($level, $message, $context = []) {
 
-        $level = Logger::toMonologLevel($level);
         if (!$this->isDebugEnabled($level)) {
             return;
         }
+        $this->log($level, $message, $context);
 
         $logger = LoggerFactory::getInstance('telegram-messenger', $context);
 
         if($logger) {
+            $message = FormatHelper::stringfyTelegramMessage($message, (array) $context);
             $logger->log($level, $message, $context);
         }
-    }
-
-    /**
-     * @param mixed $message
-     * @return string
-     */
-    private function formatMessage($message) {
-
-        if($message instanceof \Exception || $message instanceof Error) {
-            $message = (string) $message;
-        } else if(is_array($message) || is_object($message)) {
-            $message = json_encode((array) $message, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            $message = str_replace('\\u0000', '', $message);
-        }
-        return (string) $message;
     }
 
     /**

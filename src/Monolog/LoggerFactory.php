@@ -9,30 +9,30 @@ use Monolog\Registry;
 
 class LoggerFactory {
 
+    const TELEGRAM_CHANNEL = 'telegram-messenger';
+
     public static function getInstance($channel, $context) {
 
         if(Registry::hasLogger($channel)) {
             return Registry::getInstance($channel);
         }
 
-        if($channel == 'telegram-messenger') {
+        if($channel == self::TELEGRAM_CHANNEL) {
 
             $isEnabled = false;
             if(isset($_ENV['APP_LOG_TELEGRAM'])) {
                 $APP_LOG_TELEGRAM = trim(strtolower($_ENV['APP_LOG_TELEGRAM']));
-                if($APP_LOG_TELEGRAM === 'on' || $APP_LOG_TELEGRAM === 'true' || $APP_LOG_TELEGRAM === '1') {
-                    $isEnabled = true;
+                if($APP_LOG_TELEGRAM !== 'on' && $APP_LOG_TELEGRAM !== 'true' && $APP_LOG_TELEGRAM !== '1') {
+                    return null;
                 }
+            } else {
+                return null;
             }
 
             if(!isset($_ENV['APP_LOG_TELEGRAM_KEY']) || empty($_ENV['APP_LOG_TELEGRAM_KEY'])) {
-                $isEnabled = false;
+                return null;
             }
             if(!isset($_ENV['APP_LOG_TELEGRAM_CHANNEL']) || empty($_ENV['APP_LOG_TELEGRAM_CHANNEL'])) {
-                $isEnabled = false;
-            }
-
-            if(!$isEnabled) {
                 return null;
             }
 
@@ -41,19 +41,23 @@ class LoggerFactory {
             if(isset($context['parse_mode']) && !empty($context['parse_mode'])) {
                 $sender->setParseMode($context['parse_mode']);
                 unset($context['parse_mode']);
+            } else {
+                $sender->setParseMode('HTML');
             }
             if(isset($context['disable_notification']) && $context['disable_notification'] === true) {
                 $sender->disableNotification(true);
                 unset($context['disable_notification']);
             }
-            if(isset($context['disable_preview']) && $context['disable_preview'] === true) {
-                $sender->disableWebPagePreview(true);
+            if(isset($context['disable_preview']) && $context['disable_preview'] === false) {
+                $sender->disableWebPagePreview(false);
                 unset($context['disable_preview']);
+            } else {
+                $sender->disableWebPagePreview(true);
             }
 
-            $sender->setFormatter(new LineFormatter("[%datetime%] %level_name%: %message%", "d.m.Y H:i:s"));
+            $sender->setFormatter(new LineFormatter("%level_name%! %message%"));
 
-            $telegramLogger = new Logger('Telegram');
+            $telegramLogger = new Logger(self::TELEGRAM_CHANNEL);
             $telegramLogger->pushHandler($sender);
             Registry::addLogger($telegramLogger, $channel, true);
 
