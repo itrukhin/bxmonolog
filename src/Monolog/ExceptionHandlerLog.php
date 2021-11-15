@@ -3,6 +3,7 @@ namespace App\Monolog;
 
 use App\Log;
 use Bitrix\Main\Diag\Debug;
+use Bitrix\Main\Diag\ExceptionHandler;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
@@ -45,8 +46,12 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
             if(!is_array($this->context)) {
                 $this->context = (!empty($this->context) ? [$this->context] : []);
             }
-            $this->context['source'] = self::logTypeToString($logType);
-            $log->telegram(LogLevel::CRITICAL, $exception, $this->context);
+            if($logType == \Bitrix\Main\Diag\ExceptionHandlerLog::LOW_PRIORITY_ERROR) {
+                $log->error($exception, $this->context);
+            } else {
+                $this->context['source'] = self::logTypeToString($logType);
+                $log->telegram(LogLevel::CRITICAL, $exception, $this->context);
+            }
 
         } catch(\Exception $e) {
             self::logInnerException($e);
