@@ -23,7 +23,7 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
      */
     public function initialize(array $options)
     {
-        if (isset($options['context']) && is_callable($options['context']))
+        if (isset($options['context']))
         {
             $this->context = $options['context'];
         }
