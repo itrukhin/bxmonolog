@@ -49,8 +49,22 @@ class ExceptionHandlerLog extends \Bitrix\Main\Diag\ExceptionHandlerLog {
             if($logType == \Bitrix\Main\Diag\ExceptionHandlerLog::LOW_PRIORITY_ERROR) {
                 $log->error($exception, $this->context);
             } else {
-                $this->context['source'] = self::logTypeToString($logType);
-                $log->telegram(LogLevel::CRITICAL, $exception, $this->context);
+                $telegramBlocked = false;
+                if($_ENV['APP_LOG_NO_TELEGRAM']) {
+                    $blockStrings = explode('|', $_ENV['APP_LOG_NO_TELEGRAM']);
+                    foreach($blockStrings as $blockString) {
+                        if(stripos($exception, $blockString) !== false) {
+                            $telegramBlocked = true;
+                            break;
+                        }
+                    }
+                }
+                if($telegramBlocked) {
+                    $log->error($exception, $this->context);
+                } else {
+                    $this->context['source'] = self::logTypeToString($logType);
+                    $log->telegram(LogLevel::CRITICAL, $exception, $this->context);
+                }
             }
 
         } catch(\Exception $e) {
