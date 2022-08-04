@@ -14,10 +14,12 @@ class ArrayFormatter extends NormalizerFormatter
 		$date = $record['datetime'];
 		$output = array(sprintf("%s %s", $record['level_name'], $date->format("d.m.Y H:i:s")));
         $output[] = $record['message'];
-		if(is_array($record['context'])) {
-            $output[] = print_r($record['context'], true);
-        } else if(!empty($record['context'])) {
-            $output[] = $record['context'];
+        if(!empty($record['context'])) {
+            if(is_array($record['context'])) {
+                $output[] = print_r($record['context'], true);
+            } else {
+                $output[] = $record['context'];
+            }
         }
 
 		return join("\r\n", $output) . "\r\n------------------------------------------------------------------------\r\n";
