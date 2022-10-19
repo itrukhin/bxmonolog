@@ -187,8 +187,12 @@ class Log implements LoggerInterface {
         $logger = LoggerFactory::getInstance(LoggerFactory::TELEGRAM_CHANNEL, $context);
 
         if($logger) {
-            $message = FormatHelper::stringfyTelegramMessage($message, (array) $context);
-            $logger->log($level, $message, $context);
+            try {
+                $message = FormatHelper::stringfyTelegramMessage($message, (array) $context);
+                $logger->log($level, $message, $context);
+            } catch (\Exception $e) {
+                $this->logInnerException($e);
+            }
         }
     }
 
