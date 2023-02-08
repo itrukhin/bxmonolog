@@ -222,7 +222,13 @@ class Log implements LoggerInterface {
      */
     protected function logInnerException(\Exception $exception)
     {
-        Debug::writeToFile((string) $exception, "", "inner_error.log");
+        if(class_exists('\Bitrix\Main\Diag\Debug')) {
+            Debug::writeToFile((string) $exception, "", "monolog_error.log");
+        } else {
+            $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ?: '/log/');
+            $logPath = rtrim($logPath, "/");
+            file_put_contents($logPath . '/monolog_error.log', (string) $exception);
+        }
     }
 
     public static function cleanLogs($daysAgo = 15) {

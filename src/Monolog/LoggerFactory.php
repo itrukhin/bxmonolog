@@ -36,6 +36,10 @@ class LoggerFactory {
                 return null;
             }
 
+            if(!class_exists('\Monolog\Handler\TelegramBotHandler')) {
+                return null;
+            }
+
             $sender = new TelegramBotHandler($_ENV['APP_LOG_TELEGRAM_KEY'], $_ENV['APP_LOG_TELEGRAM_CHATID']);
 
             if(isset($context['parse_mode']) && !empty($context['parse_mode'])) {
