@@ -222,7 +222,7 @@ class Log implements LoggerInterface {
      */
     protected function logInnerException(\Exception $exception)
     {
-        // there may be too many open files
+        //there may be too many open files
         try {
             $logPath = $_SERVER['DOCUMENT_ROOT'] . ($_ENV['APP_LOG_FOLDER'] ?: '/log/');
             $logPath = rtrim($logPath, "/");
