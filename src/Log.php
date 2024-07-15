@@ -35,7 +35,8 @@ class Log implements LoggerInterface {
             $message = FormatHelper::stringfyMessage($message);
             $logger->alert($message, (array) $context);
         } catch (\Exception $e) {
-            $this->logInnerException($e);
+            // there may be too many open files
+            // $this->logInnerException($e);
         }
     }
 
