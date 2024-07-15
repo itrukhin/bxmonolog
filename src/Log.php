@@ -35,7 +35,7 @@ class Log implements LoggerInterface {
             $message = FormatHelper::stringfyMessage($message);
             $logger->alert($message, (array) $context);
         } catch (\Exception $e) {
-            $this->logInnerException($e);
+            //there may be too many open files
         }
     }
 
@@ -50,7 +50,7 @@ class Log implements LoggerInterface {
             $message = FormatHelper::stringfyMessage($message);
             $logger->critical($message, (array) $context);
         } catch (\Exception $e) {
-            $this->logInnerException($e);
+            //there may be too many open files
         }
     }
 
@@ -66,7 +66,7 @@ class Log implements LoggerInterface {
                 $message = FormatHelper::stringfyMessage($message);
                 $logger->error($message, (array) $context);
             } catch (\Exception $e) {
-                $this->logInnerException($e);
+                //there may be too many open files
             }
         }
     }
@@ -83,7 +83,7 @@ class Log implements LoggerInterface {
                 $message = FormatHelper::stringfyMessage($message);
                 $logger->warning($message, (array) $context);
             } catch (\Exception $e) {
-                $this->logInnerException($e);
+                //there may be too many open files
             }
         }
     }
@@ -100,7 +100,7 @@ class Log implements LoggerInterface {
                 $message = FormatHelper::stringfyMessage($message);
                 $logger->notice($message, (array) $context);
             } catch (\Exception $e) {
-                $this->logInnerException($e);
+                //there may be too many open files
             }
         }
     }
@@ -117,7 +117,7 @@ class Log implements LoggerInterface {
                 $message = FormatHelper::stringfyMessage($message);
                 $logger->info($message, (array) $context);
             } catch (\Exception $e) {
-                $this->logInnerException($e);
+                //there may be too many open files
             }
         }
     }
@@ -134,7 +134,7 @@ class Log implements LoggerInterface {
                 $message = FormatHelper::stringfyMessage($message);
                 $logger->debug($message, (array) $context);
             } catch (\Exception $e) {
-                $this->logInnerException($e);
+                //there may be too many open files
             }
         }
     }
@@ -150,7 +150,7 @@ class Log implements LoggerInterface {
             $message = FormatHelper::stringfyMessage($message);
             $logger->emergency($message, (array) $context);
         } catch (\Exception $e) {
-            $this->logInnerException($e);
+            //there may be too many open files
         }
     }
 
@@ -167,7 +167,7 @@ class Log implements LoggerInterface {
                 $message = FormatHelper::stringfyMessage($message);
                 $logger->log($level, $message, (array) $context);
             } catch (\Exception $e) {
-                $this->logInnerException($e);
+                //there may be too many open files
             }
         }
     }
