@@ -28,7 +28,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function alert($message, $context = [])
+    public function alert($message, $context = []): void
     {
         try {
             $logger = LoggerFactory::getInstance($this->channel, $context);
@@ -43,7 +43,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function critical($message, $context = [])
+    public function critical($message, $context = []): void
     {
         try {
             $logger = LoggerFactory::getInstance($this->channel, $context);
@@ -58,7 +58,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function error($message, $context = [])
+    public function error($message, $context = []): void
     {
         if ($this->isDebugEnabled(Logger::ERROR)) {
             try {
@@ -75,7 +75,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function warning($message, $context = [])
+    public function warning($message, $context = []): void
     {
         if ($this->isDebugEnabled(Logger::WARNING)) {
             try {
@@ -92,7 +92,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function notice($message, $context = [])
+    public function notice($message, $context = []): void
     {
         if ($this->isDebugEnabled(Logger::NOTICE)) {
             try {
@@ -109,7 +109,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function info($message, $context = [])
+    public function info($message, $context = []): void
     {
         if ($this->isDebugEnabled(Logger::INFO)) {
             try {
@@ -126,7 +126,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function debug($message, $context = [])
+    public function debug($message, $context = []): void
     {
         if ($this->isDebugEnabled(Logger::DEBUG)) {
             try {
@@ -143,7 +143,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function emergency($message, $context = [])
+    public function emergency($message, $context = []): void
     {
         try {
             $logger = LoggerFactory::getInstance($this->channel, $context);
@@ -159,7 +159,7 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function log($level, $message, $context = [])
+    public function log($level, $message, $context = []): void
     {
         if ($this->isDebugEnabled($level)) {
             try {
@@ -177,8 +177,8 @@ class Log implements LoggerInterface {
      * @param mixed $message
      * @param array $context
      */
-    public function telegram($level, $message, $context = []) {
-
+    public function telegram($level, $message, $context = []): void
+    {
         if (!$this->isDebugEnabled($level)) {
             return;
         }
